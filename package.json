@@ -1,0 +1,29 @@
+{
+  "name": "cryptopals-example",
+  "version": "1.0.0",
+  "description": "A module for implementing the cryptopals challenges",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/porbeta/cryptopals-example.git"
+  },
+  "keywords": [
+    "cryptopals"
+  ],
+  "author": "porbeta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/porbeta/cryptopals-example/issues"
+  },
+  "homepage": "https://github.com/porbeta/cryptopals-example#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
+  }
+}
