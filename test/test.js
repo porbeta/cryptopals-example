@@ -58,3 +58,22 @@ describe('#hexToBase64', function() {
 		expect(function() { cryptopals.hexToBase64('POI') }).to.throw(Error, "Invalid hex string provided");
 	});
 });
+
+describe('#getFixedXOR', function() {
+	it('should return XOR result for strings of equal length', function() {
+		var result = cryptopals.getFixedXOR('1c0111001f010100061a024b53535009181c', '686974207468652062756c6c277320657965');
+        expect(result).to.equal("746865206b696420646f6e277420706c6179");
+    });
+	
+	it('should throw error for non matching string lengths', function() {
+		expect(function() { cryptopals.getFixedXOR('1c0111001f010100061a024b53535009181c', '686974207468652062756c6c27732065796'); }).to.throw(Error, "Input strings are not the same length");
+    });
+	
+	it('should throw error for invalid first hex string', function() {
+		expect(function() { cryptopals.getFixedXOR('1c0111001f010100061a024b53535009181A', '686974207468652062756c6c277320657965'); }).to.throw(Error, "Invalid hex string provided");
+    });
+	
+	it('should throw error for invalid second hex string', function() {
+		expect(function() { cryptopals.getFixedXOR('1c0111001f010100061a024b53535009181c', '686974207468652062756c6c27732065796Z'); }).to.throw(Error, "Invalid hex string provided");
+    });
+});
