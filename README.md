@@ -1,7 +1,5 @@
 # cryptopals-example
 
-=========
-
 A working library of methods for the cryptopals challenges
 
 ## Example usage
