@@ -21,13 +21,12 @@
 		
 		var hexValueArray = [];
 	
-		if(this.isValidHex(hexString)) {
-			for(var i=0; i<hexString.length; i++) {
-				hexValueArray.push(hexValueMap[hexString.charAt(i)]);
-			}
-		}
-		else {
+		if(!this.isValidHex(hexString)) {
 			throw new Error ("Invalid hex string provided");
+		}
+
+		for(var i=0; i<hexString.length; i++) {
+			hexValueArray.push(hexValueMap[hexString.charAt(i)]);
 		}
 		
 		return hexValueArray;
@@ -35,121 +34,117 @@
 	
 	// Converts a hex string to a base64 string
 	hexToBase64: function(hexString) {
-		if(this.isValidHex(hexString)) {
-			var base64 = [];
-			var hexValueArray = this.toHexValueArray(hexString);
+		if(!this.isValidHex(hexString)) {
+			throw new Error("Invalid hex string provided: " + hexString);
+		}
+		
+		var base64 = [];
+		var hexValueArray = this.toHexValueArray(hexString);
+		
+		for(var i=0; i < hexValueArray.length; i += 3) {
+			var base64FirstHalf = 0;
+			var base64SecondHalf = 0;
+			var paddingCount = 0;
 			
-			for(var i=0; i < hexValueArray.length; i += 3) {
-				var base64FirstHalf = 0;
-				var base64SecondHalf = 0;
-				var paddingCount = 0;
-				
-				for(var j=0; j < 3; j++) {
-					if(i + j < hexValueArray.length) {
-						if(j == 0) {
-							base64FirstHalf += hexValueArray[i + j] << 2;
-						}
-						else if(j == 1) {
-							base64FirstHalf += hexValueArray[i + j] >> 2;
-							base64SecondHalf += (hexValueArray[i + j] % 4) << 4;
-						}
-						else if(j == 2) {
-							base64SecondHalf += hexValueArray[i + j];
-						}
+			for(var j=0; j < 3; j++) {
+				if(i + j < hexValueArray.length) {
+					if(j == 0) {
+						base64FirstHalf += hexValueArray[i + j] << 2;
 					}
-					else {
-						paddingCount++;
+					else if(j == 1) {
+						base64FirstHalf += hexValueArray[i + j] >> 2;
+						base64SecondHalf += (hexValueArray[i + j] % 4) << 4;
+					}
+					else if(j == 2) {
+						base64SecondHalf += hexValueArray[i + j];
 					}
 				}
-				
-				base64.push(base64map.charAt(base64FirstHalf));
-				
-				if(paddingCount < 2) {
-					base64.push(base64map.charAt(base64SecondHalf));
-				}
-				
-				for(var k=0; k < paddingCount; k++) {
-					base64.push("=");
+				else {
+					paddingCount++;
 				}
 			}
 			
-			return base64.join('');
+			base64.push(base64map.charAt(base64FirstHalf));
+			
+			if(paddingCount < 2) {
+				base64.push(base64map.charAt(base64SecondHalf));
+			}
+			
+			for(var k=0; k < paddingCount; k++) {
+				base64.push("=");
+			}
 		}
-		else {
-			throw new Error("Invalid hex string provided");
-		}
+		
+		return base64.join('');
 	},
 	
 	// applies an XOR operation between hex strings of equal length
 	getFixedXOR: function(aStr, bStr) {
-		if(aStr.length == bStr.length) {
-			if(this.isValidHex(aStr) && this.isValidHex(bStr)) {
-				var ret = [];
-				var aHexValues = this.toHexValueArray(aStr);
-				var bHexValues = this.toHexValueArray(bStr);
-				
-				for(var i=0; i<aHexValues.length; i++) {
-					ret.push(hexMap.charAt(aHexValues[i] ^ bHexValues[i]));
-				}
-				
-				return ret.join('');
-			}
-			else{
-				throw new Error("Invalid hex string provided");
-			}
-		}
-		else {
+		if(aStr.length != bStr.length) {
 			throw new Error("Input strings are not the same length: " + aStr.length + " <> " + bStr.length);
 		}
+
+		if(!this.isValidHex(aStr)) {
+			throw new Error("Invalid hex string provided: " + aStr);
+		}
+		
+		if(!this.isValidHex(bStr)) {
+			throw new Error("Invalid hex string provided: " + bStr);
+		}
+
+		var ret = [];
+		var aHexValues = this.toHexValueArray(aStr);
+		var bHexValues = this.toHexValueArray(bStr);
+		
+		for(var i=0; i<aHexValues.length; i++) {
+			ret.push(hexMap.charAt(aHexValues[i] ^ bHexValues[i]));
+		}
+		
+		return ret.join('');
 	},
 
 	hexToChar: function(hexString) {
-		if(hexString.length % 2 == 0 && this.isValidHex(hexString)) {
-			var chars = [];
-			for(var i=0; i<hexString.length; i += 2) {
-				var unicode = (hexValueMap[hexString.charAt(i)] << 4) + hexValueMap[hexString.charAt(i+1)];
-				chars.push(String.fromCharCode(unicode));   
-			}
+		if(hexString.length % 2 != 0 || !this.isValidHex(hexString)) {
+			throw new Error("Invalid hex string provided: " + hexString);
+		}
 
-			return chars.join('');
+		var chars = [];
+		for(var i=0; i<hexString.length; i += 2) {
+			var unicode = (hexValueMap[hexString.charAt(i)] << 4) + hexValueMap[hexString.charAt(i+1)];
+			chars.push(String.fromCharCode(unicode));   
 		}
-		else{
-			throw new Error("Invalid hex string provided");
-		}
+
+		return chars.join('');
 	},
 
 	getCipherMask: function(str, charCode) {
-		if (str.length % 2 == 0 && this.isValidHex(str)) {
-			if(Number.isInteger(charCode) && charCode >= 0 && charCode <= 255) {
-				var mask = [];
-				for(var j=0; j < str.length; j += 2) {
-					mask.push(hexMap.charAt(charCode >> 4));
-					mask.push(hexMap.charAt(charCode % 16));
-				}
+		if (str.length % 2 != 0 || !this.isValidHex(str)) {
+			throw new Error("Invalid hex string provided: " + str);
+		}
 
-				return mask.join('');
-			}
-			else {
-				throw new Error("Invalid character code provided: " + charCode);
-			}
+		if(!Number.isInteger(charCode) || charCode < 0 || charCode > 255) {
+			throw new Error("Invalid character code provided: " + charCode);
 		}
-		else{
-			throw new Error("Invalid hex string provided");
+
+		var mask = [];
+		for(var j=0; j < str.length; j += 2) {
+			mask.push(hexMap.charAt(charCode >> 4));
+			mask.push(hexMap.charAt(charCode % 16));
 		}
+
+		return mask.join('');
 	},
 
 	getCipher: function(str, mask) {
-		if (str.length % 2 ==0 && this.isValidHex(str)) {
-			if( mask.length % 2 == 0 &&  this.isValidHex(mask)) {
-				return this.hexToChar(this.getFixedXOR(str, mask));
-			}
-			else{
-				throw new Error("Invalid hex mask provided");
-			}
+		if (str.length % 2 != 0 || !this.isValidHex(str)) {
+			throw new Error("Invalid hex string provided: " + str);
 		}
-		else{
-			throw new Error("Invalid hex string provided");
+
+		if (mask.length % 2 != 0 || !this.isValidHex(mask)) {
+			throw new Error("Invalid hex mask provided: " + mask);
 		}
+
+		return this.hexToChar(this.getFixedXOR(str, mask));
 	},
 
 	getCipherArray: function(hexString) {
