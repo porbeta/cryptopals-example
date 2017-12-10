@@ -2,7 +2,7 @@
 
 var assert = require('chai').assert;
 var expect = require('chai').expect;
-var set1 = require('../build/set1');
+var set1 = require('../lib/set1');
 
 
 describe('#isValidHex', function() {

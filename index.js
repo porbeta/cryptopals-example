@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var program = require('commander');
-var set1 = require('./build/set1');
+var set1 = require('./lib/set1');
 
 program
   .version('1.1.0');
