@@ -135,11 +135,11 @@ describe('#getCipher', function() {
 	});
 
 	it('should throw an error for a hex mask with odd bytes', function() {
-		expect(function() { set1.getCipher('1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736', '5858585858585858585858585858585858585858585858585858585858585858585'); }).to.throw(Error, "Invalid hex mask provided");
+		expect(function() { set1.getCipher('1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736', '5858585858585858585858585858585858585858585858585858585858585858585'); }).to.throw(Error, "Invalid hex string provided");
 	});
 
 	it('should throw an error for a hex mask with invalid characters', function() {
-		expect(function() { set1.getCipher('1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736', '5858585858585858585858585858585858585858585858585858585858585858585z'); }).to.throw(Error, "Invalid hex mask provided");
+		expect(function() { set1.getCipher('1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736', '5858585858585858585858585858585858585858585858585858585858585858585z'); }).to.throw(Error, "Invalid hex string provided");
 	});
 });
 

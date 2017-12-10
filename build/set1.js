@@ -15,15 +15,32 @@
 		var hexRegex = new RegExp('^[a-f0-9]+$');
 		return hexRegex.test(hexString);
 	},
+
+	checkValidHex: function() {
+		for (var i = 0; i < arguments.length; i++) {
+			if(!this.isValidHex(arguments[i])) {
+				throw new Error ("Invalid hex string provided: " + arguments[i]);
+			}
+		}
+
+		return true;
+	},
+
+	checkValidUnicodeHex: function() {
+		for (var i = 0; i < arguments.length; i++) {
+			if(!this.isValidHex(arguments[i]) || arguments[i].length % 2 != 0) {
+				throw new Error ("Invalid hex string provided: " + arguments[i]);
+			}
+		}
+
+		return true;
+	},
 	
 	// Converts a hex string to an array of hex values
 	toHexValueArray: function(hexString) {
-		
 		var hexValueArray = [];
 	
-		if(!this.isValidHex(hexString)) {
-			throw new Error ("Invalid hex string provided");
-		}
+		this.checkValidHex(hexString);
 
 		for(var i=0; i<hexString.length; i++) {
 			hexValueArray.push(hexValueMap[hexString.charAt(i)]);
@@ -34,9 +51,7 @@
 	
 	// Converts a hex string to a base64 string
 	hexToBase64: function(hexString) {
-		if(!this.isValidHex(hexString)) {
-			throw new Error("Invalid hex string provided: " + hexString);
-		}
+		this.checkValidHex(hexString);
 		
 		var base64 = [];
 		var hexValueArray = this.toHexValueArray(hexString);
@@ -84,13 +99,7 @@
 			throw new Error("Input strings are not the same length: " + aStr.length + " <> " + bStr.length);
 		}
 
-		if(!this.isValidHex(aStr)) {
-			throw new Error("Invalid hex string provided: " + aStr);
-		}
-		
-		if(!this.isValidHex(bStr)) {
-			throw new Error("Invalid hex string provided: " + bStr);
-		}
+		this.checkValidHex(aStr, bStr);
 
 		var ret = [];
 		var aHexValues = this.toHexValueArray(aStr);
@@ -104,9 +113,7 @@
 	},
 
 	hexToChar: function(hexString) {
-		if(hexString.length % 2 != 0 || !this.isValidHex(hexString)) {
-			throw new Error("Invalid hex string provided: " + hexString);
-		}
+		this.checkValidUnicodeHex(hexString);
 
 		var chars = [];
 		for(var i=0; i<hexString.length; i += 2) {
@@ -118,9 +125,7 @@
 	},
 
 	getCipherMask: function(str, charCode) {
-		if (str.length % 2 != 0 || !this.isValidHex(str)) {
-			throw new Error("Invalid hex string provided: " + str);
-		}
+		this.checkValidUnicodeHex(str);
 
 		if(!Number.isInteger(charCode) || charCode < 0 || charCode > 255) {
 			throw new Error("Invalid character code provided: " + charCode);
@@ -136,13 +141,7 @@
 	},
 
 	getCipher: function(str, mask) {
-		if (str.length % 2 != 0 || !this.isValidHex(str)) {
-			throw new Error("Invalid hex string provided: " + str);
-		}
-
-		if (mask.length % 2 != 0 || !this.isValidHex(mask)) {
-			throw new Error("Invalid hex mask provided: " + mask);
-		}
+		this.checkValidUnicodeHex(str, mask);
 
 		return this.hexToChar(this.getFixedXOR(str, mask));
 	},
