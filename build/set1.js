@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 (function() {
   var base64map = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
   hexMap = '0123456789abcdef',
@@ -16,6 +18,7 @@
 		return hexRegex.test(hexString);
 	},
 
+	// Throws an Error if an argument is not a valid hex string
 	checkValidHex: function() {
 		for (var i = 0; i < arguments.length; i++) {
 			if(!this.isValidHex(arguments[i])) {
@@ -26,6 +29,7 @@
 		return true;
 	},
 
+	// Throws an Error if an argument is not a valid hex string to be converted to plaintext
 	checkValidUnicodeHex: function() {
 		for (var i = 0; i < arguments.length; i++) {
 			if(!this.isValidHex(arguments[i]) || arguments[i].length % 2 != 0) {
@@ -112,6 +116,7 @@
 		return ret.join('');
 	},
 
+	// Converts a valid hex string to plaintext
 	hexToChar: function(hexString) {
 		this.checkValidUnicodeHex(hexString);
 
@@ -124,15 +129,16 @@
 		return chars.join('');
 	},
 
-	getCipherMask: function(str, charCode) {
-		this.checkValidUnicodeHex(str);
+	// Creates a cipher mask for a given hex string using a key of a specified character code
+	getCipherMask: function(hexString, charCode) {
+		this.checkValidUnicodeHex(hexString);
 
 		if(!Number.isInteger(charCode) || charCode < 0 || charCode > 255) {
 			throw new Error("Invalid character code provided: " + charCode);
 		}
 
 		var mask = [];
-		for(var j=0; j < str.length; j += 2) {
+		for(var j=0; j < hexString.length; j += 2) {
 			mask.push(hexMap.charAt(charCode >> 4));
 			mask.push(hexMap.charAt(charCode % 16));
 		}
@@ -140,12 +146,14 @@
 		return mask.join('');
 	},
 
-	getCipher: function(str, mask) {
-		this.checkValidUnicodeHex(str, mask);
+	// Returns the plaintext representation of a hex string XOR'd against a cipher mask of the same length
+	getCipher: function(hexString, mask) {
+		this.checkValidUnicodeHex(hexString, mask);
 
-		return this.hexToChar(this.getFixedXOR(str, mask));
+		return this.hexToChar(this.getFixedXOR(hexString, mask));
 	},
 
+	// Returns an array of all potential plaintext ciphers for a given hex string
 	getCipherArray: function(hexString) {
 		var ciphers = [];
 
@@ -156,6 +164,7 @@
 		return ciphers;
 	},
 	
+	// Returns the Chi-squared score for a given plaintext string
 	getChiSquaredScoreForEnglish: function(str) {
 		var count = [], ignored = 0;
 		for (var i = 0; i <= 26; i++) count[i] = 0;
