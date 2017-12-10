@@ -1,5 +1,3 @@
-var fs = require('fs');
-
 (function() {
   var base64map = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
   hexMap = '0123456789abcdef',
@@ -189,6 +187,7 @@ var fs = require('fs');
 		return chiSquared;
 	},
 	
+	// Returns a report of scores for each plaintext cipher and the most probable key
 	getChiSquaredScoreForCiphers: function(hexString) {
 		var cipherArray = this.getCipherArray(hexString);
 
