@@ -33,6 +33,37 @@ program
     console.log('    $ cryptopals gfxor a1234f 6435bc');
     console.log();
   }); 
+
+  program
+  .command('hextochar <hexString>')
+  .alias('htc')
+  .description('convert a hex string to unicode characters')
+  .action(function(hexString, options){
+	  console.log(set1.hexToChar(hexString));
+  }).on('--help', function() {
+    console.log('  Examples:');
+    console.log();
+    console.log('    $ cryptopals hextochar 6435bc');
+    console.log('    $ cryptopals htc 6435bc');
+    console.log();
+  }); 
+
+program
+  .command('mostprobablekey <hexString>')
+  .alias('mpk')
+  .description('finds the most probable key for deciphering a hex string')
+  .action(function(hexString, options){
+    var report = set1.getChiSquaredScoreForCiphers(hexString);
+    var mostProbableKey = report['mostProbableKey'];
+
+    console.log(mostProbableKey);
+  }).on('--help', function() {
+    console.log('  Examples:');
+    console.log();
+    console.log('    $ cryptopals mostprobablekey 6435bc');
+    console.log('    $ cryptopals mpk 6435bc');
+    console.log();
+  }); 
  
 program.parse(process.argv);
 
