@@ -52,6 +52,25 @@ program
   }); 
 
 program
+  .command('detectencrypted <fileName>')
+  .alias('detenc')
+  .description('detect the encrypted hex string in a file of hex strings')
+  .action(function(hexString, options){
+    var report = set1.detectEncryptedString(hexString);
+    var index = report['mostProbableLine'];
+    
+    console.log(report["results"][index]["lineText"] + " (key:" + report["results"][index]["mostProbableKey"] + ")");
+
+
+  }).on('--help', function() {
+    console.log('  Examples:');
+    console.log();
+    console.log('    $ cryptopals detectencrypted file.txt');
+    console.log('    $ cryptopals de file.txt');
+    console.log();
+  });
+
+program
   .command('hextochar <hexString>')
   .alias('htc')
   .description('convert a hex string to unicode characters')
@@ -66,14 +85,29 @@ program
   });
 
 program
+  .command('applyrepeatxor <repeatingKey> <text>')
+  .alias('arx')
+  .description('apply a repeating key XOR to a plaintext message')
+  .action(function(repeatingKey, text, options){
+    console.log(set1.applyRepeatingKeyXOR(text, repeatingKey));
+  }).on('--help', function() {
+    console.log('  Examples:');
+    console.log();
+    console.log('    $ cryptopals applyrepeatxor xyz 6435bc');
+    console.log('    $ cryptopals arx xyz 6435bc');
+    console.log();
+  });
+
+program
   .command('decipher <cipherCharacter> <hexString>')
   .description('convert a hex string to unicode characters')
   .action(function(cipherCharacter, hexString, options){
-    if(!cipherCharacter.match("/^[A-Za-z0-9]+$/i")) {
-      console.log(set1.getCipher(hexString, set1.getCipherMask(hexString, cipherCharacter.charCodeAt(0))));
+    var pattern = new RegExp("^[A-Za-z0-9]$")
+    if(cipherCharacter.match(pattern)) {
+      console.log(set1.getCipher(hexString, set1.getCipherMask(hexString, [cipherCharacter.charCodeAt(0)])));
     }
     else {
-      console.log("Error: The cipherCharacter provided is not alphanumeric");
+      console.log("Error: The cipherCharacter provided is not a single, alphanumeric character");
     }
   }).on('--help', function() {
     console.log('  Examples:');
