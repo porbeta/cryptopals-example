@@ -39,8 +39,8 @@ program
   .alias('mpk')
   .description('finds the most probable key for deciphering a hex string')
   .action(function(hexString, options){
-    var report = set1.getChiSquaredScoreForCiphers(hexString);
-    var mostProbableKey = report['mostProbableKey'];
+    var result = set1.getSuggestedKeyForCipheredBlock(hexString);
+    var mostProbableKey = String.fromCharCode(result);
 
     console.log(mostProbableKey);
   }).on('--help', function() {
@@ -60,8 +60,47 @@ program
     var index = report['mostProbableLine'];
     
     console.log(report["results"][index]["lineText"] + " (key:" + report["results"][index]["mostProbableKey"] + ")");
+  }).on('--help', function() {
+    console.log('  Examples:');
+    console.log();
+    console.log('    $ cryptopals detectencrypted file.txt');
+    console.log('    $ cryptopals de file.txt');
+    console.log();
+  });
 
+program
+  .command('applyrepeatxor <repeatingKey> <text>')
+  .alias('arx')
+  .description('apply a repeating key XOR to a plaintext message')
+  .action(function(repeatingKey, text, options){
+    console.log(set1.applyRepeatingKeyXOR(text, repeatingKey));
+  }).on('--help', function() {
+    console.log('  Examples:');
+    console.log();
+    console.log('    $ cryptopals applyrepeatxor xyz 6435bc');
+    console.log('    $ cryptopals arx xyz 6435bc');
+    console.log();
+  });
 
+program
+  .command('breakrepeatxor <fileName>')
+  .alias('brx')
+  .description('break the repeating key XOR for a given encrypted file')
+  .action(function(fileName, options){
+    var report = set1.breakRepeatingKeyXOR(fileName);
+
+    console.log("most likely key size:");
+    console.log("-------------------------");
+    console.log(report[0]["keysize"]);
+    console.log();
+    console.log("suggested key:");
+    console.log("-------------------------");
+    console.log(report[0]["suggestedKey"]);
+    console.log();
+    console.log("decrypted message:");
+    console.log("-------------------------");
+    console.log(report[0]["decryptedMessage"]);
+    console.log();
   }).on('--help', function() {
     console.log('  Examples:');
     console.log();
@@ -85,30 +124,15 @@ program
   });
 
 program
-  .command('applyrepeatxor <repeatingKey> <text>')
-  .alias('arx')
-  .description('apply a repeating key XOR to a plaintext message')
-  .action(function(repeatingKey, text, options){
-    console.log(set1.applyRepeatingKeyXOR(text, repeatingKey));
-  }).on('--help', function() {
-    console.log('  Examples:');
-    console.log();
-    console.log('    $ cryptopals applyrepeatxor xyz 6435bc');
-    console.log('    $ cryptopals arx xyz 6435bc');
-    console.log();
-  });
-
-program
-  .command('decipher <cipherCharacter> <hexString>')
+  .command('decipher <hexString> <cipherCharacter>')
   .description('convert a hex string to unicode characters')
-  .action(function(cipherCharacter, hexString, options){
-    var pattern = new RegExp("^[A-Za-z0-9]$")
-    if(cipherCharacter.match(pattern)) {
-      console.log(set1.getCipher(hexString, set1.getCipherMask(hexString, [cipherCharacter.charCodeAt(0)])));
+  .action(function(hexString, cipherCharacter, options){
+    var cipherArray = [];
+    for(var i = 0; i < cipherCharacter.length; i++) {
+      cipherArray.push(cipherCharacter.charCodeAt(i));
     }
-    else {
-      console.log("Error: The cipherCharacter provided is not a single, alphanumeric character");
-    }
+    
+    console.log(set1.getCipher(hexString, set1.getCipherMask(hexString, cipherArray)));
   }).on('--help', function() {
     console.log('  Examples:');
     console.log();
