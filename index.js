@@ -110,6 +110,20 @@ program
   });
 
 program
+  .command('aesecbdecrypt <fileName> <key>')
+  .alias('aed')
+  .description('decrypts a file using ')
+  .action(function(fileName, key, options){
+	  console.log(set1.decryptAES128EBC(fileName, key));
+  }).on('--help', function() {
+    console.log('  Examples:');
+    console.log();
+    console.log('    $ cryptopals aesecbdecrypt file.txt "SAMPLE_KEY"');
+    console.log('    $ cryptopals aed file.txt "SAMPLE_KEY"');
+    console.log();
+  });
+
+program
   .command('hextochar <hexString>')
   .alias('htc')
   .description('convert a hex string to unicode characters')
